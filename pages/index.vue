@@ -7,30 +7,34 @@ useHead({
   }
 })
 
-const x = ref<number>(null)
-const y = ref<number>(null)
 const puzzle = usePuzzle()
+const inputMode = useState('inputMode', () => 'setValue')
 
 onMounted(() => {
   puzzle.build(0, 0)
-  puzzle.init(40)
+  puzzle.init(20)
 })
 
-const cellClass = (cell) => {
-  return {
-    'text-gray-400': cell.given,
-    'text-red-400': puzzle.answerFor(cell) != cell.value,
-    'bg-gray-600 hover:bg-gray-500': cell.x == puzzle.x && cell.y == puzzle.y
-  }
-}
-
+const digits = Array.from({length: 9}, (_, i) => i + 1)
 const onKeyPress = e => {
-  if (e.code.startsWith("Digit") || e.code.startsWith("Numpad")) {
+  if (digits.includes(parseInt(e.key))) {
     let cell = puzzle.currentCell
 
     if (cell.given) return
-    if (cell.value == e.key) cell.value = null
-    else puzzle.setValue(e.key)
+    if (cell.value == e.key) {
+      puzzle.setValue(null)
+    } else {
+      puzzle[inputMode.value](e.key)
+    }
+  }
+
+  // toggle mode
+  if (e.key == "!") {
+    if (inputMode.value == 'setValue') {
+      inputMode.value = 'setNote'
+    } else {
+      inputMode.value = 'setValue'
+    }
   }
 }
 
@@ -38,14 +42,9 @@ onMounted(() => window.addEventListener('keypress', onKeyPress))
 onUnmounted(() => window.removeEventListener('keypress', onKeyPress))
 </script>
 
-<template>
-  <div class="container w-1/2 h-screen mx-auto mt-3">
-    <div class="aspect-square grid grid-cols-3 gap-1">
-      <div class="grid grid-cols-3 gap-px" v-for="(cells, i) in puzzle.boxes" :key="i">
-        <div class="aspect-square flex justify-center items-center text-7xl text-gray-300 bg-gray-900 hover:bg-gray-800 font-light" v-for="(cell, j) in cells" :key="j" @click="puzzle.select(cell)" :class="cellClass(cell)">
-          <span>{{ cell.value }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
+<template lang="pug">
+div.container.h-screen.mx-auto.mt-3(class="w-1/2")
+  .aspect-square.grid.grid-cols-3.gap-1
+    div(v-for="(cells, i) in puzzle.boxes" :key="i").grid.grid-cols-3.gap-px
+      PuzzleCell(v-for="(cell, j) in cells" :key="j" :cell="cell")
 </template>

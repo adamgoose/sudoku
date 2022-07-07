@@ -1,27 +1,35 @@
 import { defineStore } from 'pinia'
 import { compare, PriorityQueue } from "@anorcle/dsa";
 
-interface Cell {
+export interface Cell {
   x: number,
   y: number,
   value: number,
-  given: boolean
+  given: boolean,
+  notes: number[]
 }
 
 export const usePuzzle = defineStore('puzzle', {
   state: () => ({
-    x: 0,
-    y: 0,
+    x: -1,
+    y: -1,
     final: useTimes(9, x => useTimes(9, y => ({x, y, value: 0} as Cell))),
-    initial: useTimes(9, x => useTimes(9, y => ({x, y} as Cell))),
+    initial: useTimes(9, x => useTimes(9, y => ({x, y, notes: []} as Cell))),
   }),
   actions: {
     select(cell: Cell) {
       this.x = cell.x
       this.y = cell.y
     },
-    setValue(value: number) {
+    setValue(value: string) {
       this.initial[this.x][this.y].value = value
+    },
+    setNote(value: string) {
+      if (this.currentCell.notes.includes(parseInt(value))) {
+
+      } else {
+        this.initial[this.x][this.y].notes.push(parseInt(value))
+      }
     },
     answerFor(cell: Cell) {
       return this.final[cell.x][cell.y].value
@@ -78,6 +86,7 @@ export const usePuzzle = defineStore('puzzle', {
   },
   getters: {
     currentCell(): Cell {
+      if (this.x < 0 || this.y < 0) return {} as Cell
       return this.initial[this.x][this.y]
     },
     boxes(): Cell[][] {
