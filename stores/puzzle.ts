@@ -26,7 +26,7 @@ export const usePuzzle = defineStore('puzzle', {
     },
     setNote(value: string) {
       if (this.currentCell.notes.includes(parseInt(value))) {
-        let i = this.initial[this.x][this.y].notes.indexOf(value)
+        let i = this.initial[this.x][this.y].notes.indexOf(parseInt(value))
         this.initial[this.x][this.y].notes.splice(i, 1)
       } else {
         this.initial[this.x][this.y].notes.push(parseInt(value))
