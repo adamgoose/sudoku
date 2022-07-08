@@ -12,7 +12,7 @@ const inputMode = useState('inputMode', () => 'setValue')
 
 onMounted(() => {
   puzzle.build(0, 0)
-  puzzle.init(20)
+  puzzle.init(25)
 })
 
 const digits = Array.from({length: 9}, (_, i) => i + 1)
@@ -43,8 +43,10 @@ onUnmounted(() => window.removeEventListener('keypress', onKeyPress))
 </script>
 
 <template lang="pug">
-div.container.h-screen.mx-auto.mt-3(class="w-1/2")
-  .aspect-square.grid.grid-cols-3.gap-1
-    div(v-for="(cells, i) in puzzle.boxes" :key="i").grid.grid-cols-3.gap-px
-      PuzzleCell(v-for="(cell, j) in cells" :key="j" :cell="cell")
+div
+  div.container.h-screen.mx-auto.mt-3(class="w-1/2")
+    .aspect-square.grid.grid-cols-3.gap-1
+      div(v-for="(cells, i) in puzzle.boxes" :key="i").grid.grid-cols-3.gap-px
+        PuzzleCell(v-for="(cell, j) in cells" :key="j" :cell="cell")
+    div.text-white Mode: {{ inputMode }}
 </template>
